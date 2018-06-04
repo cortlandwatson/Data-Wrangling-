@@ -1,0 +1,137 @@
+---
+title: "CaseStudy_2"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+library(gapminder)
+library(ggplot2)
+library(tidyverse)
+
+
+```
+
+##Reading
+This reading will help you complete the tasks below.
+
+o [Chapter 3: R for Data Science - Data visualization](http://r4ds.had.co.nz/data-visualisation.html)
+
+<div style="padding-left:30px;">
+
+How to use ggplot2!
+
+</div>
+
+o [Hans Rosling: The River of Myths]()
+
+##Tasks
+
+[x] Watch the Hons Rosling video
+
+[x] Recreate the two graphics shown below using gapminder dataset from library(gapminder) (get them to match as closely as you can) 
+
+<div style="padding-left:30px;">
+
+  [ ] Use library(ggplot2) and the theme_bw() to duplicate the first plot
+  
+```{r}
+
+```
+  
+  [x] Use scale_y_continuous(trans = "sqrt") to get the correct scale on the y-axis.
+  
+  [x] Build weighted average data set using weighted.mean() and GDP with mutate() and group_by() that will be the black continent average line on the second plot
+  
+  [x] Use library(ggplot2) and the theme_bw() to duplicate the second plot. You will need to use the new data to make the black lines and dots showing the continent average.
+  
+```{r, include=FALSE}
+gapminder1 <- gapminder %>% filter(country != "Kuwait") %>%
+mutate(pop_100k = pop/100000)
+
+gapminder1
+
+gapminder2 <- gapminder1 %>%
+group_by(continent, year) %>%
+summarise(weighted_mean_gdp = weighted.mean(gdpPercap, pop_100k), population = sum(pop_100k))
+
+gapminder2
+
+ggplot(data = gapminder1, mapping = aes(x = lifeExp, y = gdpPercap)) +
+geom_point(mapping = aes(color = continent, size = pop_100k)) +
+facet_wrap(~ year, nrow = 1) +
+labs(x = "Life Expectancy", y = "GDP per Capita", size = "Population (100k)", color = "Continent") +
+scale_y_continuous(trans = "sqrt") +
+theme_bw()
+
+ggplot(data = gapminder1, mapping = aes(x = lifeExp, y = gdpPercap)) +
+geom_point(mapping = aes(color = continent, size = pop_100k)) +
+facet_wrap(~ year, nrow = 1) +
+labs(x = "Life Expectancy", y = "GDP per Capita", size = "Population (100k)", color = "Continent") +
+scale_y_continuous(trans = "sqrt") +
+theme_bw()
+
+ggplot(data = gapminder1, mapping = aes(x = year, y = gdpPercap), position = "jitter") +
+geom_point(mapping = aes(color = continent, group = country)) + #Continent Data
+geom_line(mapping = aes(color = continent, group = country)) + #Continent Data
+geom_point(data = gapminder2, mapping = aes(y = weighted_mean_gdp, size = population)) + #Black Line
+geom_line(data = gapminder2, mapping = aes(y = weighted_mean_gdp)) + #Black Line
+facet_wrap(~ continent, nrow = 1) +
+labs(x = "Year", y = "GDP per Capita", color = "Continent", size = "Population (100K)") +
+scale_y_continuous(trans = "sqrt") +
+theme_bw()
+
+ggsave("GapminderPlot2.png", width = 15)
+
+ggplot(data = gapminder1, mapping = aes(x = lifeExp, y = gdpPercap)) +
+geom_point(mapping = aes(color = continent, size = pop_100k)) +
+facet_wrap(~ year, nrow = 1) +
+labs(x = "Life Expectancy", y = "GDP per Capita", size = "Population (100k)", color = "Continent") +
+scale_y_continuous(trans = "sqrt") +
+theme_bw()
+
+ggsave("GapminderPlot1.png", width = 15)
+
+```
+  
+  [x] Use ggsave() and save each plot as a .png with a width of 15 inches
+
+</div>
+
+[x] Build an Rmd file that has the following features 
+
+<div style="padding-left:30px;">
+
+[x] The title is the same as listed in the task
+
+[x] You have two sections – 1) Background, 2) Images
+
+[x] In the background section write a few sentences about what you learned making these plots
+
+[x] In the Image section have two chunks. One for each image
+
+</div>
+
+[x] Save your .Rmd',.md, and the two.png`’s of the plots into your git repository.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,76 @@
+---
+title: "Task_4"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+##Reading
+
+This reading will help you complete the tasks below.
+
+o [Hans Rosling: The best stats you’ve ever seen](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen)
+
+o [Creating Questions for your project](https://www.mindtools.com/pages/article/newTMC_88.htm)
+
+Question types; open/closed questions, funnel questions, probing questions, leading questions, rhetorical questions.
+
+o [Chapter 5: R for Data Science - Data transformation](http://r4ds.had.co.nz/transform.html)
+
+filter(), arrange(), select(), mutate(), summarise(), grouped mutates and filters
+
+
+
+o [DataCamp: Data Wrangling Chapter of Introduction to Tidyverse](https://campus.datacamp.com/courses/introduction-to-the-tidyverse/data-wrangling-1?ex=1)
+
+o [DataCamp: Data Transformation Chapter of Introduction to Tidyverse](https://campus.datacamp.com/courses/introduction-to-the-tidyverse/grouping-and-summarizing?ex=1)
+
+
+##Tasks
+
+[x] Develop a few novel questions that data can answer 
+
+How does demographic information predict bullying victims? How is phone usage affecting driving? How does fast food consumption affect school performance?
+
+[x] Get feedback from 5-10 people on their interest in your questions 
+and summarize this feedback
+
+[x] Find other examples of people addressing your question
+
+[x] Present your question to a data scientist to get feedback on the quality of the question and if it can be addressed in 2-months.
+
+[x] Create one .rmd file that has your report 
+
+[x] Have a section for each question
+
+[x] Push your .Rmd, .md, and .html to your GitHub repo
+
+[x] Be prepared to discuss your results in the upcoming class
+
+##Summary Report of Feedback
+
+For each of these questions, I have also asked Brother Christopher Lowry and Brother Brady Wiggins of the psychology department for their input. I have decided to ask these two professors because of their expertise. Wiggins is a professor that teaching research classes and has valuable insight on research questions and obtainability. Lowry has spent many years studying learning and education. He is a neuropsychologist and takes personal interest in data of distraction and health.
+
+My professors both thought that this questions would be great questions to pose to be answered by data. Their only concern was being able to develop a way to collect the data, but given that there are data sets in the web, we would be able to present nice visualizations. Brother Lowry did mention that it might be more useful to use the question about cell phones in a different wording. This wording was "how is texting affecting driving".
+
+Dylan gave me feedback on all three of these questions, suggesting that I reword the first in order to more accurately collect and present data. He stated that the second question would easily have a lot of data that can be collected over the internet. Lastly he stated that the third question would be very interesting to see. He stated that similar research has been done in the workplace with positive results indicating that junk food negatively affects productivity. 
+
+
+###Can demographic information predict is someone will be bullied?
+It would be really cool to see if someone would be able to collect data on this topic. This would be useful in determining at risk individuals and developing a program to help those in this demographic. It would also be good to be able to focus time and effort on those that are in this situation. It would be difficult to collect this data, if people are not already collecting it. Surveys might be appropriate, but the reliability of surveys are not that great as people are able to be dishonest, or misleading.
+
+###How is phone usage affecting driving?
+This seems to be an important topic that is relatively new. It seems that this is something that people are going to need to be more aware of. We will be able to get more information on this and help in saving lives and working towards a solution. As phone usage continues to increase with social media and other things, driving and safety become and are continually becoming more of a concern. This data would also be difficult to obtain, unless research were gathered based on data that has been previously collected by another party.
+
+
+###How does fast food consumption affect school performance?
+Yes. This seems like something that could also have some interesting results that would bring about action, as well as being able to help students in making healthier life choices. Although people in college tend to go for the cheapest options, does this affect how they are performing in school. Exercise and nutrition are big factors in considering the mental health of individuals and their cpacity to think. 
+
+
+
+

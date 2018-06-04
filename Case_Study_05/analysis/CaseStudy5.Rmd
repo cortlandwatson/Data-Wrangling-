@@ -1,0 +1,156 @@
+---
+title: "Case Study 5"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(readxl)
+library(devtools)
+library(RCurl)
+library(readr)
+library(haven)
+library(ggplot2)
+library(dplyr)
+library(downloader)
+library(foreign)
+```
+
+##Background
+
+The [Scientific American](https://www.scientificamerican.com/article/why-are-we-getting-taller/) argues that humans have been getting taller over the years. As the data scientists that we are becoming, we would like to find data that validates this concept. Our challenge is to show different male heights across the centuries.
+
+This project is not as severe as the two quotes below, but it will give you a taste of pulling various data and file formats together into “tidy” data for visualization and analysis. You will not need to search for data as all the files are listed [here](https://byuistats.github.io/M335/maleheight.html)
+
+“Classroom data are like teddy bears and real data are like a grizzly bear with salmon blood dripping out its mouth.” - [Jenny Bryan](https://twitter.com/JennyBryan)
+
+“Up to 80% of data analysis is spent on the process of cleaning and preparing data” - Hadley Wickham
+
+##Reading
+
+This reading will help you complete the tasks below.
+
+o [Hadley on Tidy Data](http://vita.had.co.nz/papers/tidy-data.pdf)
+
+o [foreign R Package and read.dbf()](https://www.rdocumentation.org/packages/foreign/versions/0.8-69/topics/read.dbf)
+
+##Tasks
+
+```{r,include=FALSE}
+Heights <- read_excel("C:/Users/Cortland/OneDrive/School/Stats/M335_WatsonC/Case_Study_05/analysis/Height.xlsx", range = "A3:GU309")
+
+Bavaria1 <- read_dta("C:/Users/Cortland/OneDrive/School/Stats/M335_WatsonC/Case_Study_05/analysis/Bavaria.dta")
+
+Bavaria2 <- read_dta("C:/Users/Cortland/OneDrive/School/Stats/M335_WatsonC/Case_Study_05/analysis/Bavaria2.dta")
+
+Soldiers <- read.dbf("C:/Users/Cortland/OneDrive/School/Stats/M335_WatsonC/Case_Study_05/analysis/Soldiers.DBF")
+
+BLS <- read_csv("https://github.com/hadley/r4ds/raw/master/data/heights.csv")
+
+Survey <- read_sav("C:/Users/Cortland/OneDrive/School/Stats/M335_WatsonC/Case_Study_05/analysis/Survey.sav")
+
+Heights <- Heights %>% 
+  gather(`1800`:`2011`, key = "year", value = "height") %>%
+  filter(Code != c(150, 155, 154, 39, 151, 19, 21, 419, 29, 13, 5, 9, 53, 54, 57, 61, 142, 34, 30, 35, 145, 143, 2, 15, 11, 17, 18, 14),
+         !is.na(height)) %>%
+  separate(year, into = c("century", "year"), sep = 2) %>%
+  separate(year, into = c("decade", "year"), sep = 1) %>%
+  mutate(year_decade = paste(century, decade, year, sep = ""),
+         height = round(height, 1)) %>%
+  mutate(height.in = height*0.39370079) %>%
+  rename(height.cm = height, Country = `Continent, Region, Country`) 
+
+Bavaria1 <- Bavaria1 %>%
+  rename(height.cm = height, birth_year = bdec) %>%
+  mutate(height.in = height.cm*0.39370079, study = "Bavaria-Prison") %>%
+  select(birth_year, height.cm, height.in, study) 
+
+Bavaria2 <- Bavaria2 %>%
+  select(bdec, height) %>%
+  rename(birth_year = bdec, height.cm = height) %>%
+  mutate(height.in = height.cm*0.39370079, study = "Bavaria-Conscripts")
+
+Soldiers <- Soldiers %>%
+  select(SJ, GEBJZ) %>%
+  rename(birth_year = SJ, height.cm = GEBJZ) %>%
+  mutate(height.in = height.cm*0.39370079, study = "South-East-South-West")
+
+BLS <- BLS %>%
+  select(height) %>%
+  rename(height.in = height) %>%
+  mutate(height.cm = height.in*(1/0.39370079), study = "BLS", birth_year = 1950)
+
+Survey <- Survey %>%
+  select(RT216F, RT216I, DOBY) %>%
+  mutate(height.in = RT216F*12 + RT216I, birth_year = DOBY+1900) %>%
+  select(birth_year, height.in) %>%
+  mutate(height.cm = height.in*(1/0.39370079), study = "Wisconson") 
+
+CompleteData <- rbind(Bavaria1, Bavaria2, Soldiers, BLS, Survey)
+
+CompleteDecade <- CompleteData %>%
+  mutate(birth_year = round(birth_year, -1), birth_year = parse_character(birth_year)) %>%
+  filter(!is.na(birth_year))
+
+Germany <- Heights %>% 
+  filter(Country == "Germany")
+```
+
+```{r}
+ggplot(data = Heights, mapping = aes(x = year_decade, y = height.in)) +
+  geom_boxplot(mapping = aes(fill = year_decade),
+               outlier.shape = NA) +
+  geom_jitter(mapping = aes(color = year_decade), alpha = 0.2) +
+  geom_point(data = Germany, color = "black") +
+  theme_minimal() +
+  theme(legend.position = "None", axis.text.x = element_text(angle = 50, vjust = 1, hjust = 1)) +
+  labs(color = "Year",
+       fill = "Year",
+       x = "Decade",
+       y = "Height in Inches",
+       title = "Height Through the Decades",
+       subtitle = "Color = Countries of the world / Black = Germany")   
+```
+
+<div style="padding-left:30px;">
+
+This graphic, inspired by the graphic that Blake Cromar produced, is able to show the height measured through different decades beginning in 1810. The box blots represent the variance of the data points and the measurements for each decade, represented by a color. Then the black points are able to show us the progressive measurement of Germany. This graphic allows us to see that through time, heights are continuing to increase. Now, but running a regression we would be able to predict with confidence where we would be in x amount of years, but that is a task for another day.
+
+</div>
+
+```{r}
+ggplot(data = CompleteDecade, 
+       mapping = aes(x = birth_year, y = height.in)) +
+  geom_boxplot(outlier.shape = NA) +
+  facet_wrap(~study, nrow = 3, scales = "free_x") + 
+  ylim(50, 80) +
+  theme_minimal() +
+  theme(legend.position = "None") +
+  labs(x = "Birth Year",
+       y = "Hight in Inches",
+       title = "Heights by Study",
+       subtitle = "The plots represent data from different studies")
+```
+
+<div style="padding-left:30px;">
+
+The small multiples plot here allows us to see a few things. Given the fact that we have data from different sources, we are able to still see some trends. The Bavarian data has some contradicting information. One says that the height was increasing from 1850 to 1870, while the other appears to show a decrease. The south-east-south-west data shows a general trend in the late 1700's. Lastly the Wisconsin data shows that there was a lot of variation throughout the given time period. Fluctuating from tall to shorter, then growing and shrinking. Given the datasets and information, we would be great beneficiaries of continued research regarding the heights of pelople throughout the world. This data is also in contention one with another as the data points do not necessarily agree with each other.
+
+</div>
+
+
+
+
+
+
+
+
+

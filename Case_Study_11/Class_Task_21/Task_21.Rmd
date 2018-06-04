@@ -1,0 +1,109 @@
+---
+title: "Task_21"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(USAboundaries)
+library(ggrepel)
+library(sf)
+library(maps)
+library(leaflet)
+```
+
+##Background
+Choose from Task 19 or Task 20 and recreate your plot using leaflet
+
+##Reading
+This reading will help you complete the tasks below.
+
+o [Leaflet for R: Introduction](http://rstudio.github.io/leaflet/colors.html)
+
+o [Leaflet for R: The Map Widget](http://rstudio.github.io/leaflet/colors.html)
+
+o [Leaflet for R: Basemaps](http://rstudio.github.io/leaflet/colors.html)
+
+o [Leaflet for R: Markers](http://rstudio.github.io/leaflet/colors.html)
+
+o [Leaflet for R: Popups and Labels](http://rstudio.github.io/leaflet/colors.html)
+
+o [Leaflet for R: Lines and Shapes](http://rstudio.github.io/leaflet/colors.html)
+
+o [Leaflet for R: Colors](http://rstudio.github.io/leaflet/colors.html)
+
+##Tasks
+```{r,include=FALSE}
+States <- st_as_sf(map("state", fill = TRUE, plot = FALSE))
+
+Cities <- us_cities(map_date = NULL) %>%
+  filter(state != "AK",
+         state != "HI") %>%
+  mutate(pop_1000 = population/1000) %>%
+  group_by(state) %>%
+  filter(row_number(desc(population)) %in% c(1,2,3)) %>%
+  group_by(state) %>%
+  mutate(rank = rank(desc(population)))
+
+Cities1 <- Cities %>% 
+  group_by(state) %>%
+  filter(row_number(desc(population)) == 1) 
+
+pal <- colorFactor(c("firebrick4", "yellow2", "orange2"), domain = c(1, 2, 3))
+
+```
+
+```{r}
+leaflet(data = Cities) %>%
+  addTiles() %>%
+  setView(lng = -95, lat = 40, zoom = 3) %>%
+  addCircleMarkers(~lon, ~lat, popup = ~as.character(city), 
+                   label = ~as.character(city),
+                   color = ~pal(rank),
+                   radius = ~ifelse(rank == 1, 10, 5),
+                   stroke = FALSE,
+                   fillOpacity = 1) %>%
+  addPopups(lng = ~lon, lat = ~lat, 
+            popup = ~as.character(city), data = Cities1,
+            options = popupOptions(closeButton = FALSE,
+                                   textOnly = TRUE)) %>%
+  addProviderTiles(providers$Esri.NatGeoWorldMap) %>%
+  addPolygons(color = "black", 
+              data = States, 
+              fill = FALSE, 
+              opacity = 1,
+              weight = 1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,91 @@
+---
+title: "Task_10"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+library(pander)
+library(tidyverse)
+library(readxl)
+library(devtools)
+library(RCurl)
+library(readr)
+library(haven)
+library(ggplot2)
+library(dplyr)
+library(downloader)
+```
+
+##Background
+
+With stock return data from the previous task, we need to tidy this data for the creation of a time series plot. We want to look at the returns for each six-month period of the year in which the returns were reported. Your plot should highlight the tighter spread of the DJIA as compared to the other two selection methods (DARTS and PROS). We need to display a table of the DJIA returns with months on the rows and years in the columns (i.e. “spread” the data).
+
+##Reading
+
+This reading will help you complete the tasks below.
+
+o [Chapter 12: R for Data Science - Tidy Data](http://r4ds.had.co.nz/tidy-data.html)
+
+o [tidy R Package functions](https://rpubs.com/bradleyboehmke/data_wrangling)
+
+o [openxlsx R package](https://github.com/awalker89/openxlsx)
+
+##Tasks
+
+```{r, include=FALSE}
+Stock <- read_rds(gzcon(url("https://github.com/byuistats/data/raw/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.RDS")))
+
+Stock <- Stock %>% 
+  filter(contest_period != "Average") %>% 
+  separate(contest_period, c("Beginning Period", "End Period")) %>%
+  select(-`Beginning Period`) %>%
+  separate(`End Period`, c("month_end", "year_end"), sep = -5) 
+
+Stock$month_end[c(43, 143, 243)] = "December"
+Stock$year_end[c(43, 143, 243)] = 1993
+Stock$month_end[c(57, 157, 257)] = "February"
+
+DJIA <- Stock %>%
+  filter(variable %in% "DJIA") %>% 
+  select(-variable) %>%
+  spread(key = year_end, value = value)
+```
+
+```{r}
+ggplot(data = Stock, mapping = aes(x = year_end, y = value)) +
+  geom_boxplot(mapping = aes(group = year_end, fill = year_end),
+               outlier.shape = NA) +
+  geom_jitter(mapping = aes(color = year_end), alpha = 0.2) +
+  theme_minimal() +
+  labs(x = "",
+       y = "Value of Return",
+       title = "Stock Returns from 1990 to 1998 from Selected Stocks",
+       subtitle = "6-month Returns",
+       fill = "Year",
+       color = "Year")
+```
+
+<div style="padding-left:30px;">
+
+This graphic allows us to see the returns through the years of the given data set. The boxplot across the graphic allows us to see the percentiles and where the jittered data points fall, in reference to the rest, while allowing us to see trends. Although the graphic is not specific about the selected stocks, further investigation would allow us to look at this for those specific variables. 
+
+</div>
+
+````{r}
+pander(DJIA)
+```
+
+<div style="padding-left:30px;">
+
+This table allows us to see certain years and how the DJIA was doing during specific months of those years. Although this table is not something that communicates a lot, it presents the information that one might want. The graphic is able to communicate better, but this does allow for the invester to see the real numbers that were used for this data set. 
+
+</div>
+
+

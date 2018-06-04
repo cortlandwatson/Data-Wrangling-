@@ -1,0 +1,55 @@
+# Task_1
+watsoncl  
+
+<style>
+
+
+
+</style>
+
+## Reading 
+o [Chapter 1: R for Data Scientists](http://r4ds.had.co.nz/index.html)
+
+o [R and R-Studio Practice](https://byuistats.github.io/M335/r_help.html)
+
+o [John Rauser Talk](https://www.youtube.com/watch?v=fSgEeI2Xpdc&feature=youtu.be)
+
+o [Effectively Communicating Numbers (pg 1-13)](http://perceptualedge.com/articles/Whitepapers/Communicating_Numbers.pdf)
+
+## Instructions
+[X] Read the course sylabus and make sure you understand our class routine and grading
+
+[X] Get R and R-Studio running on your computer 
+
+[X] Install the swirl package install.packages("swirl")
+
+
+```r
+#> install.packages("swirl")
+
+#package ‘swirl’ successfully unpacked and MD5 sums checked
+
+#The downloaded binary packages are in
+#	C:\Users\Cortland\AppData\Local\Temp\RtmpcDdFYq\downloaded_packages
+```
+
+[X] Use library(swirl) and follow directions to get ‘R Programming: The basics of programming in R’ course loaded
+
+
+```r
+#(| To begin, you must install a course. I can install a course for you from the internet, or I can send you to a web page (https://github.com/swirldev/swirl_courses) which will provide course options and directions for installing courses yourself. (If you are not connected to the internet, type 0 to exit.)
+
+#1: R Programming: The basics of programming in R
+#2: Regression Models: The basics of regression modeling in R
+#3: Statistical Inference: The basics of statistical inference in R
+#4: Exploratory Data Analysis: The basics of exploring data in R
+#5: Don't install anything for me. I'll do it myself.
+
+#Selection: 1 
+#(Course installed successfully!)
+```
+
+[X] Watch the [John Rauser](https://www.youtube.com/watch?v=fSgEeI2Xpdc&feature=youtu.be) Presentation. Here are his [Codes](https://github.com/jrauser/writing/blob/master/how_humans_see_data/hhsd_notes.Rmd).
+
+[X] Use the following [google spreadsheet](https://docs.google.com/spreadsheets/d/13YcmNLdbrk3QiOLdDs7RP8t9bKpvz83bXGq-rt5yhCc/edit#gid=1108382243) to input your three favorite segments of the video. Use your course standardized name lastname firstletterfirstname – For example mine is hathawayj.
+

@@ -1,0 +1,90 @@
+---
+title: "Task_18"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(pander)
+library(tidyquant)
+library(quantmod)
+library(dygraphs)
+library(timetk)
+library(DT)
+library(xts)
+```
+
+##Background
+Interactive visualizations can often be powerful for data investigations. They let your team get at questions in real time. Use the Kroger (KR) stock price to build an interactive visualization of their performance over the last five years. Annotate the graphic with a note of the reason at two or more time points, or intervals, where the price had significant shifts.
+
+##Reading
+This reading will help you complete the tasks below.
+
+o [dygraphs for R](http://rstudio.github.io/dygraphs/index.html)
+
+o [DT: An R interface to the Data Tables library](https://rstudio.github.io/DT/)
+
+o [timekit R package](https://github.com/business-science/timetk)
+
+o [How William Cleveland Turned Data Visualization into a Science](https://priceonomics.com/how-william-cleveland-turned-data-visualization/)
+
+##Tasks
+```{r,include=FALSE}
+Kroger <- tq_get("KR",
+                       get = "stock.prices",
+                       from = "2013-04-01",
+                       to = "2018-04-01") %>%
+  select(-volume) %>%
+  rename(Open = open, High = high, Low = low, Close = close, Adjusted = adjusted) %>%
+  tk_xts(start = 2013, freq = 1259, silent = TRUE)
+
+```
+
+```{r}
+dygraph(Kroger,
+        ylab = "Stock Value",
+        main = "Kroger Stocks") %>% 
+  dyRangeSelector() 
+```
+
+The significant drop here in June 16, 2017 was due to the opening of Amazon Whole Foods. This affected Kroger, as well as Walmart and other food companies. 
+In August of 2015 there was a bull market. This means that the whole market dropped about 20%, thus creating a mini market crash. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

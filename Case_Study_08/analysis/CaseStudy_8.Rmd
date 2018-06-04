@@ -1,0 +1,166 @@
+---
+title: "CaseStudy_8"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(riem)
+library(rio)
+library(pander)
+```
+
+##Background
+We have transaction data for a few businesses that have been in operation for three months. Each of these companies has come to your investment company for a loan to expand their business. Your boss has asked you to go through the transactions for each business and provide daily, weekly, and monthly gross revenue summaries and comparisons. Your boss would like a short write up with tables and visualizations that help with the decision of which company did the best over the three month period. You will also need to provide a short paragraph with your recommendation after building your analysis.
+In our course we are only looking at understanding and visualizing recorded time series data. If you would like to learn more about forecasting I would recommend [Forecasting: Principles and Practice](https://www.otexts.org/fpp2/) and for a quick introduction see [here](https://afit-r.github.io/ts_exploration).
+
+##Reading
+
+This reading will help you complete the tasks below.
+
+o [lubridate R package](lubridate.tidyverse.org/)
+
+##Tasks
+```{r, include=FALSE}
+Sales <- import("https://byuistats.github.io/M335/data/sales.csv")
+
+Sales1 <- Sales %>%
+  filter(Name != "Missing") %>%
+  mutate(Time = str_replace(.$Time, "T", " ")) %>%
+  mutate(Time = str_replace(.$Time, "Z", "")) %>%
+  mutate(Time = ymd_hms(.$Time, tz = "America/Denver")) %>%
+  mutate(Year = year(.$Time),
+         Month = month(.$Time, label = TRUE),
+         Monthday = mday(.$Time),
+         Yearday = yday(.$Time),
+         Weekday = wday(.$Time),
+         Weekday1 = wday(.$Time, label = TRUE),
+         Hour = hour(.$Time)) %>%
+  filter(Month != "Apr") %>% 
+  filter(Amount < 200,
+         Amount > -100)
+
+Monthly <- group_by(Sales1, Name, Year, Month) 
+Monthly1 <- summarise(Monthly, AVG = mean(Amount, na.rm = TRUE))
+
+```
+
+
+```{r}
+ggplot(data = Sales1, aes(x = Hour, y = Amount, group = Name)) +
+  geom_point() +
+  facet_wrap(~Name) +
+  theme_minimal()  +
+  labs(x = "Time",
+       y = "Amount",
+       title = "Companies by Hour of Day") +
+  geom_hline(yintercept = 0, 
+             color = "red", 
+             size = .5)
+
+```
+
+#### <a href="javascript:showhide('Hourly')">Hourly Table </a>
+
+<div id="Hourly" style="display:none;">
+
+```{r}
+Hourly <- group_by(Sales1, Name, Year, Month, Weekday1, Hour)
+View(Hourly)
+Hourly1 <- summarise(Hourly, AVG = mean(Amount, na.rm = TRUE))
+pander(knitr::kable(Hourly1))
+```
+
+</div>
+
+<div style="padding-left:30px;">
+
+This graphi allows us to see the table in a simplified manner. In it, the red line represents even. We excluded the extreme highs and lows as we cannot depend on thiese numbers to truly reflect actual business, especially when coming to loans. We are able to see that SplashandDash and LeBelle have consistent high marks, but they are grouped together which makes them appear to be larger. None of the business are open from 6-14 which indicates night time. We are also able to see that Splash and Dash only have traffic from 14-24.
+
+</div>
+
+```{r}
+#Weekly
+ggplot(data = Sales1, aes(x = Weekday1, y = Amount, group = Name)) +
+  geom_point() +
+  facet_wrap(~Name) +
+  theme_minimal() +
+  labs(x = "Day",
+       y = "Amount",
+       title = "Companies by Week") +
+  geom_hline(yintercept = 0, 
+             color = "red", 
+             size = .5)
+```
+
+#### <a href="javascript:showhide('Weekly')">Weekly Table </a>
+
+<div id="Weekly" style="display:none;">
+
+```{r}
+Weekly <- group_by(Sales1, Name, Year, Month, Weekday1) 
+Weekly1 <- summarise(Weekly, AVG = mean(Amount, na.rm = TRUE))
+pander(knitr::kable(Weekly1))
+```
+
+</div>
+
+<div style="padding-left:30px;">
+
+This information also provides us with valuable information. First, half of the businesses are open on sunday and it appears to be a day that is not needed. Then we are able to see that throughout the week, businesses tend to do better approaching the weekend. Also, we again see the two previous companies performing well.
+
+</div>
+
+```{r}
+#Monthly
+ggplot(data = Sales1, aes(x = Month, y = Amount, group = Name)) +
+  geom_point() +
+  geom_jitter(width = .3, alpha = .8) +
+  theme_minimal() +
+  facet_wrap(~Name) +
+  labs(x = "Month",
+       y = "Amount",
+       title = "Companies by Month") +
+  geom_hline(yintercept = 0, 
+             color = "red", 
+             size = .5)
+
+```
+
+#### <a href="javascript:showhide('Monthly')">Monthly Table </a>
+
+<div id="Monthly" style="display:none;">
+
+```{r}
+
+pander(knitr::kable(Monthly1))
+```
+
+</div>
+
+<div style="padding-left:30px;">
+
+Finally in the monthly graphic we are able to see that these two companies are still performing very well, even more importantly that they are consistent. These companies are above even and thus would allow them to pay off the loan. 
+
+</div>
+
+##Suggestion
+
+<div style="padding-left:30px;">
+
+I would suggest investing in or loaning to LeBelle. They are consistently been above even and they even have moments of large successes. The key in loaning money is making sure we would get the money back, plus interest, and with them it would happen.
+
+</div>
+

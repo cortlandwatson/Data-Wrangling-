@@ -1,0 +1,77 @@
+---
+title: "Task_16"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(riem)
+library(rio)
+```
+
+##Background
+A car wash business wants to see if the temperature hurts their bottom line. They have point of sale data for the months of April, May, June, and July. You will need to aggregate the data into hourly sales totals and merge the sales data together with the temperature data to provide insight into the relationship between temperature and car wash sales.
+
+##Reading
+
+This reading will help you complete the tasks below.
+
+o [lubridate Vignette](https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html)
+
+o [Plotly: Time Series Blog Post](https://plotlyblog.tumblr.com/post/117105992082/time-series-graphs-eleven-stunning-ways-you-can)
+
+##Tasks
+```{r, include=FALSE}
+CarWash <- import("https://byuistats.github.io/M335/data/carwash.csv")
+
+Weather <- riem_measures(station = "RXE", date_start = "2016-05-01", date_end = "2016-07-18")
+
+CarWash1 <- CarWash %>%
+  mutate(time = str_replace(.$time, "T", " ")) %>%
+  mutate(time = str_replace(.$time, "Z", "")) %>%
+  mutate(time = ymd_hms(.$time, tz = "UTC")) %>%
+  mutate(MT = with_tz(.$time, tzone = "America/Denver")) %>%
+  mutate(MTHour = ceiling_date(.$time, "hour")) %>%
+  group_by(MTHour) %>%
+  summarise(total_sales = sum(amount)) %>%
+  arrange(desc(MTHour))
+
+Weather1 <- Weather %>%
+  select(valid, tmpf) %>%
+  filter(!is.na(tmpf)) %>%
+  mutate(MTHour = ceiling_date(.$valid, "hour")) %>%
+  rename(temperature = tmpf) %>%
+  select(MTHour, temperature) 
+
+CarWash2 <- CarWash1 %>%
+  left_join(Weather1, by = "MTHour") %>%
+  filter(!is.na(temperature)) %>%
+  mutate(hour = hour(.$MTHour)) %>%
+  mutate(hour = as.factor(.$hour))
+
+```
+
+####Does temperature effect the car wash sales?
+```{r}
+ggplot(data = CarWash2, aes(x = temperature, y = total_sales)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "Temperatue",
+       y = "Profit",
+       title = "Temperature on Sales") 
+```
+
+
+

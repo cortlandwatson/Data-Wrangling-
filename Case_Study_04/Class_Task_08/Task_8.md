@@ -1,0 +1,60 @@
+---
+title: "Task_8"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+
+
+
+##Reading
+
+This reading will help you complete the tasks below.
+
+o [Finding data to answer your question](https://www.dataquest.io/blog/free-datasets-for-projects/)
+
+o [Find a post from the functional art](www.thefunctionalart.com/)
+
+o [Chapter 18: R for Data Science - Pipes](http://r4ds.had.co.nz/pipes.html)
+
+##Tasks
+
+[x] Build an interactive document that has links to sources with a description of the quality of each 
+
+https://data.world/transportation/2015-traffic-fatalities This source is a cumulation of data on lethal driving accidents in 2015. It contains information about drunk driving, dates, and deaths.
+
+
+
+
+
+[x] Find 3-5 potential data sources (that are free) and document some information about the source
+
+[ ] Build an R script that reads in, formats, and visualizes the data using the principles of exploratory analysis
+
+[ ] Write a short summary of the read in process and some coding secrets you learned
+
+[ ] Include 2-3 quick visualizations that you used to check the quality of your data
+
+[ ] Summarize the limitations of your final compiled data in addressing your original question
+
+[ ] After formatting your date identify any follow on or alternate questions that you could use for your project
+
+
+
+
+
+
+
+
+
+
+
+
+
+

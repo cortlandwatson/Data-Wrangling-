@@ -1,0 +1,158 @@
+---
+title: "CaseStudy_9"
+author: watsoncl 
+output: 
+  html_document:
+    keep_md: true
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(pander)
+library(tidyquant)
+library(quantmod)
+library(dygraphs)
+library(timetk)
+library(DT)
+library(xts)
+```
+
+##Background
+Your data science income has ballooned, and you need to find somewhere to invest $25,000 that you have saved over the last year. You have a savvy investment friend that is kind enough to tell you ten stocks he has been watching during the last year. You will need to visualize the last five years performance to help in the in the conversation with your friend.
+
+Your friend is going to give you his tickers at the beginning of your half-hour meeting with him (he is a busy friend). You will need to build an .Rmd file that will build a suite of visualizations rapidly for your conversation. You will need a series of stock performance graphics using library(dygraphs) and library(ggplot2). In real life, you might use one or the other, but this task is built to help you move from ts and xts to tidy objects for visualization.
+
+Specifically, in class the Tuesday following this case study you will get 5 - 10 ticker symbols and will need to build visualizations quickly that allows you to answer questions about the stocks in a few seconds.
+
+
+##Reading
+This reading will help you complete the tasks below.
+
+o [See task 16](https://byuistats.github.io/M335/class_tasks/task16_details.html)
+
+##Tasks
+```{r,include=FALSE}
+Stocks <- c("CXW", "F", "GM",               
+                   "JCP", "KR", "WDC",            
+                   "NKE","T", "WDAY",             
+                   "WFC", "WMT")  
+
+Years <- 5              
+
+Returns <- Stocks %>% 
+  tq_get(get  = "stock.prices",
+         from = today() - dyears(Years),  
+         to   = today()) %>%                    
+  select(symbol, date, adjusted) %>%
+  spread(key = symbol, value = adjusted) %>%                  
+  tk_xts(start =  year(today() - dyears(Years)),  
+         silent = TRUE)             
+
+wts <- c(rep(1/length(Stocks),              
+             length(Stocks))) 
+
+Investment <- 25000                        
+
+ReturnsDaily <- Stocks %>%
+  tq_get(get  = "stock.prices",
+         from = today() - dyears(Years), 
+         to   = today()) %>%                    
+  group_by(symbol) %>%
+  tq_transmute(select     = adjusted,           
+               mutate_fun = periodReturn,       
+               period     = "daily",            
+               col_rename = "Ra")
+
+PortfolioDaily <- ReturnsDaily %>%
+  tq_portfolio(assets_col   = symbol, 
+               returns_col  = Ra, 
+               weights      = wts, 
+               col_rename   = "investment.growth",
+               wealth.index = TRUE) %>%
+  mutate(investment.growth = investment.growth * Investment) %>%       
+  tk_xts(start = year(today() - dyears(Years)), 
+         silent = TRUE)
+
+Volume <- Stocks %>% 
+  tq_get(get  = "stock.prices",
+         from = today() - dyears(Years),  
+         to   = today()) %>%                   
+  select(symbol, date, volume)
+```
+
+```{r}
+dygraph(Returns,
+        ylab = "Adjusted Value") %>% 
+  dyRangeSelector()  %>%
+  dyShading(from = today() - dyears(Years), 
+            to = today()) 
+```
+
+<div style="padding-left:30px;">
+
+This graphic is intense. It is able to show us the trends of all of our desired stocks over the past several years. It is interesting to note that all of the stocks stayed in the same relative position during this time frame that is given. 
+
+</div>
+
+```{r}
+dygraph(PortfolioDaily,
+        ylab = "Value of Portfolio") %>% 
+  dyRangeSelector()
+```
+
+<div style="padding-left:30px;">
+
+This is the most telling and useful time that I have used dygraph. It is simple and able to tell us what we need to know. It allows us to explore more specific dates, while allowing us to see an overall trend. This is a beautiful graphic and helps us to communicate what w are asking. 
+
+</div>
+
+```{r}
+ggplot(data = Volume, aes(x = date, y = volume/1000000)) +
+  geom_smooth(aes(color = symbol),
+              se = FALSE)  +
+  labs(title="Stock Shares Through the Years",
+       x = "Date",
+       y = "Volume of Shares (In Millions)",
+       color = "Stock") +
+  theme_minimal() 
+```
+
+<div style="padding-left:30px;">
+
+The graphic used here teaches me one thing. That shares do not have much to do with price or change in a stock. T and F were the stocks with the most shares, but during this time frame, their value did not have drastic changes. This then teaches me that just because everyone is doing it, it does not mean that it is right. 
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
